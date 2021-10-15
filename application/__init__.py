@@ -18,6 +18,7 @@ load_dotenv()
 def create_app():
     app = Flask(__name__)
 
+    app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')
 
@@ -28,5 +29,11 @@ def create_app():
     jwt.init_app(app)
 
     migrate.init_app(app, db)
+
+    from application.blueprints import auth_api, user_api, post_api
+
+    app.register_blueprint(auth_api, url_prefix='/api')
+    app.register_blueprint(user_api, url_prefix='/api')
+    app.register_blueprint(post_api, url_prefix='/api')
 
     return app
