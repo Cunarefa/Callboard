@@ -28,7 +28,7 @@ class PostSchema(ma.Schema):
     id = fields.Integer(dump_only=True)
     title = fields.String(validate=validate.Length(max=255))
     description = fields.String(validate=validate.Length(max=500))
-    inserted_at = fields.DateTime(dump_only=True)
+    created_at = fields.DateTime(dump_only=True)
     updated_at = fields.DateTime(dump_only=True)
     type = fields.String(validate=validate.Length(max=255))
     priority = fields.Integer()
