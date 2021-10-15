@@ -26,11 +26,11 @@ def register():
     db.session.add(user)
     db.session.commit()
 
-    token = create_access_token(identity=user.username, expires_delta=datetime.timedelta(days=1))
+    token = create_access_token(identity=user.username, expires_delta=datetime.timedelta(days=7))
     return {"user": schema.dump(user), "token": token}
 
 
-@auth_api.route('/login', methods=['GET'])
+@auth_api.route('/login', methods=['POST'])
 def login():
     json_data = request.json
 
@@ -45,6 +45,6 @@ def login():
 
     user = User.query.filter(User.username == username).first()
     if user and check_password_hash(user.password, password):
-        token = create_access_token(identity=user.username)
+        token = create_access_token(identity=user.username, expires_delta=datetime.timedelta(days=7))
         return {"user": schema.dump(user), "token": token}
     return make_response("Wrong username or password", 401)
