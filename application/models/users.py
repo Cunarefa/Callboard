@@ -1,6 +1,6 @@
 from marshmallow import EXCLUDE, fields, validate
 
-from application import db, ma
+from application import db, ma, jwt
 
 
 class User(db.Model):
@@ -12,7 +12,7 @@ class User(db.Model):
     password = db.Column(db.String(255))
     first_name = db.Column(db.String(255))
     last_name = db.Column(db.String(255))
-    posts = db.relationship('Posts', backref='author', lazy='select')
+    posts = db.relationship('Post', backref='author', lazy='select')
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
@@ -28,3 +28,9 @@ class UserSchema(ma.Schema):
     password = fields.String(validate=validate.Length(max=128), load_only=True)
     first_name = fields.String(validate=validate.Length(max=255))
     last_name = fields.String(validate=validate.Length(max=255))
+
+
+@jwt.user_lookup_loader
+def user_lookup_callback(_jwt_header, jwt_data):
+    identity = jwt_data["sub"]
+    return User.query.filter_by(username=identity).one_or_none()
