@@ -12,6 +12,7 @@ class User(db.Model):
     password = db.Column(db.String(255))
     first_name = db.Column(db.String(255))
     last_name = db.Column(db.String(255))
+    is_admin = db.Column(db.Boolean(), default=False)
     posts = db.relationship('Post', backref='author', lazy='select')
 
     def __str__(self):
@@ -28,6 +29,7 @@ class UserSchema(ma.Schema):
     password = fields.String(validate=validate.Length(max=128), load_only=True)
     first_name = fields.String(validate=validate.Length(max=255))
     last_name = fields.String(validate=validate.Length(max=255))
+    is_admin = fields.Boolean()
 
 
 @jwt.user_lookup_loader
