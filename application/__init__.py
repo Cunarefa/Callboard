@@ -30,10 +30,12 @@ def create_app():
 
     migrate.init_app(app, db)
 
-    from application.blueprints import auth_api, user_api, post_api
+    from application.blueprints import auth_api, user_api, post_api, comment_api, like_api
 
     app.register_blueprint(auth_api, url_prefix='/api')
     app.register_blueprint(user_api, url_prefix='/api')
     app.register_blueprint(post_api, url_prefix='/api')
+    app.register_blueprint(comment_api, url_prefix='/api')
+    app.register_blueprint(like_api, url_prefix='/api')
 
     return app
