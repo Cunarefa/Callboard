@@ -3,6 +3,7 @@ import datetime
 from marshmallow import EXCLUDE, fields, validate
 
 from application import db, ma
+from application.models.likes import likes
 
 
 class Post(db.Model):
@@ -16,6 +17,8 @@ class Post(db.Model):
     type = db.Column(db.String(255))
     priority = db.Column(db.Integer)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    comments = db.relationship('Comment', backref='post', lazy='dynamic')
+    likes = db.relationship('User', secondary=likes, backref='liked', lazy='dynamic')
 
     def __str__(self):
         return self.title

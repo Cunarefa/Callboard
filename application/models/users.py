@@ -1,6 +1,7 @@
 from marshmallow import EXCLUDE, fields, validate
 
 from application import db, ma, jwt
+from application.models.likes import likes
 
 
 class User(db.Model):
@@ -13,7 +14,10 @@ class User(db.Model):
     first_name = db.Column(db.String(255))
     last_name = db.Column(db.String(255))
     is_admin = db.Column(db.Boolean(), default=False)
+    deleted = db.Column(db.Boolean(), default=False)
     posts = db.relationship('Post', backref='author', lazy='select')
+    comments = db.relationship('Comment', backref='author', lazy='dynamic')
+    liked_posts = db.relationship('Post', secondary=likes, backref='users_liked', lazy='dynamic')
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
@@ -30,6 +34,7 @@ class UserSchema(ma.Schema):
     first_name = fields.String(validate=validate.Length(max=255))
     last_name = fields.String(validate=validate.Length(max=255))
     is_admin = fields.Boolean()
+    deleted = fields.Boolean()
 
 
 @jwt.user_lookup_loader
