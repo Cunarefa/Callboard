@@ -4,8 +4,8 @@ from marshmallow import ValidationError
 
 from application import db
 from application.blueprints import post_api
-from application.models.posts import PostSchema, Post
-from application.models import User
+from application.models.posts import PostSchema
+from application.models import User, Post
 from application.permissions import permission_required
 
 
@@ -58,6 +58,8 @@ def update_post(post_id):
 
 
 @post_api.route('/users/<int:user_id>/posts', methods=['GET'])
+@jwt_required()
+@permission_required(Post)
 def user_posts(user_id):
     posts = db.session.query(Post).join(User, User.id == Post.author_id).filter(User.id == user_id)
 
@@ -77,6 +79,8 @@ def user_posts(user_id):
 
 
 @post_api.route('/posts/<int:post_id>', methods=['GET'])
+@jwt_required()
+@permission_required(Post)
 def get_post(post_id):
     post = db.session.query(Post).filter(Post.id == post_id).first_or_404()
     schema = PostSchema()
