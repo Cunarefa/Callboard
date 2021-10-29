@@ -35,3 +35,6 @@ def get_all_users():
     schema = UserSchema(many=True)
     users = User.query.filter(User.deleted is not True).all()
     return jsonify({'users': schema.dump(users)})
+
+
+
