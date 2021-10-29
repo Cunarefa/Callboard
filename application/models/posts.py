@@ -1,9 +1,11 @@
 import datetime
 
 from marshmallow import EXCLUDE, fields, validate
+from sqlalchemy.ext.hybrid import hybrid_property
 
 from application import db, ma
 from application.models.likes import likes
+from application.models.users import User
 
 
 class Post(db.Model):
@@ -22,6 +24,10 @@ class Post(db.Model):
 
     def __str__(self):
         return self.title
+
+    @hybrid_property
+    def likes_quantity(self):
+        return db.session.query(likes).join(User).filter(User.deleted is not True).count()
 
 
 class PostSchema(ma.Schema):
