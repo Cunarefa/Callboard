@@ -28,23 +28,23 @@ def create_post():
     return schema.dump(post), 201
 
 
-@post_api.route('/posts/<int:post_id>', methods=['DELETE'])
+@post_api.route('/posts/<int:instance_id>', methods=['DELETE'])
 @jwt_required()
 @permission_required(Post)
-def delete_post(post_id):
-    post = db.session.query(Post).filter(Post.id == post_id).first_or_404()
+def delete_post(instance_id):
+    post = db.session.query(Post).filter(Post.id == instance_id).first_or_404()
     db.session.delete(post)
     db.session.commit()
-    return {"message": f"Post with {post_id} id deleted"}, 204
+    return {"message": f"Post with {instance_id} id deleted"}, 204
 
 
-@post_api.route('/posts/<int:post_id>', methods=['PATCH'])
+@post_api.route('/posts/<int:instance_id>', methods=['PATCH'])
 @jwt_required()
 @permission_required(Post)
-def update_post(post_id):
+def update_post(instance_id):
     json_data = request.json
 
-    post = db.session.query(Post).filter(Post.id == post_id).first_or_404()
+    post = db.session.query(Post).filter(Post.id == instance_id).first_or_404()
     schema = PostSchema()
     try:
         data = schema.load(json_data)
