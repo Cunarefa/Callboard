@@ -1,4 +1,4 @@
-from flask import request, abort
+from flask import request, abort, jsonify
 from flask_jwt_extended import current_user, jwt_required
 from marshmallow import ValidationError
 
@@ -43,3 +43,23 @@ def post_comments(post_id):
     schema = CommentSchema(many=True)
     comments = Post.query.filter(Post.id == post_id).first_or_404().comments.all()
     return {f"Post {post_id} comments": schema.dump(comments)}
+
+
+@comment_api.route('/users/comments', methods=['GET'])
+@jwt_required()
+def user_comments():
+    comments = current_user.comments
+    schema = CommentSchema(many=True)
+    return jsonify(schema.dump(comments))
+
+
+
+
+
+
+
+
+
+
+
+
