@@ -6,6 +6,7 @@ from application import db
 from application.blueprints import comment_api
 from application.models.comments import CommentSchema, Comment
 from application.models import Post
+from application.permissions import permission_required
 
 
 @comment_api.route('/comments/posts/<int:post_id>', methods=["POST"])
@@ -28,14 +29,33 @@ def add_comment(post_id):
     return {"comment": data['content']}
 
 
-@comment_api.route('/comments/<int:comment_id>', methods=["DELETE"])
+@comment_api.route('/comments/<int:instance_id>', methods=["DELETE"])
 @jwt_required()
-def delete_comment(comment_id):
-    comment = Comment.query.filter(Comment.id == comment_id).first_or_404()
+@permission_required(Comment)
+def delete_comment(instance_id):
+    comment = Comment.query.filter(Comment.id == instance_id).first_or_404()
 
     db.session.delete(comment)
     db.session.commit()
     return {'message': f'Comment with {comment.id} successfully deleted'}, 200
+
+
+@comment_api.route('/comments/<int:instance_id>', methods=["PATCH"])
+@jwt_required()
+@permission_required(Comment)
+def update_comment(instance_id):
+    comment = Comment.query.filter(Comment.id == instance_id).first_or_404()
+    schema = CommentSchema()
+
+    json_data = request.json
+    try:
+        data = schema.load(json_data)
+    except ValidationError as err:
+        return abort(400, description=err)
+
+    db.session.query(Comment).filter(Comment.id == instance_id).update(data)
+    db.session.commit()
+    return schema.dump(comment)
 
 
 @comment_api.route('/posts/<int:post_id>/comments', methods=["GET"])
