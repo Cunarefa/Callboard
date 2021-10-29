@@ -10,6 +10,14 @@ from application.models import User
 from application.models import Post
 
 
+import sys
+from os.path import dirname as d
+from os.path import abspath, join
+root_dir = d(d(abspath(__file__)))
+sys.path.append(root_dir)
+
+
+
 @pytest.fixture
 def client():
     _app = create_app()
@@ -39,7 +47,7 @@ def user():
 
 @pytest.fixture
 def post(user):
-    post = Post(title='My post', author_id=user.id)
+    post = Post(title='My post')
     db.session.add(post)
     db.session.commit()
     return post

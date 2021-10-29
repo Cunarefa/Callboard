@@ -5,7 +5,6 @@ def test_add_comment(client, headers, post):
     json_data = {"content": "I proud of you"}
     client.post('/api/comments/posts/1', json=json_data, headers=headers)
     rv = Post.query.filter(Post.id == post.id).first_or_404().comments.first()
-
     assert rv.content == "I proud of you"
 
 
@@ -18,5 +17,12 @@ def test_delete_comment(client, headers, post):
     client.delete('/api/comments/1', headers=headers)
     rv = Post.query.filter(Post.id == post.id).first_or_404().comments.all()
     assert len(rv) == 0
+
+
+def test_update_comment(client, headers, post):
+    test_add_comment(client, headers, post)
+    json_data = {"content": "Updated"}
+    rv = client.patch('/api/comments/1', headers=headers, json=json_data)
+    assert rv.json['content'] == "Updated"
 
 
