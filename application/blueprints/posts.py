@@ -12,7 +12,6 @@ from application.permissions import permission_required
 
 @post_api.route('/posts', methods=['POST'])
 @jwt_required()
-# @permission_required(Post) # декоратор не работает в этом методе - переделаю
 def create_post():
     json_data = request.json
 
